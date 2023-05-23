@@ -1,4 +1,5 @@
 def pos_email(sorted_df,concat_df):
+    import pandas as pd
     import smtplib
     from email.mime.text import MIMEText
     from email.mime.multipart import MIMEMultipart
