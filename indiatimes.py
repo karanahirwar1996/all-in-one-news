@@ -38,9 +38,9 @@ def india_times(page_count=4):
             date.append(extract_date(items.find('time',{"class":"date-format"}).text))
             time.append(extract_time(items.find('time',{"class":"date-format"}).text))
         page += 1
-    data = pd.DataFrame({'Headline': tag, 'URL': href,"date":date,"Time":time})
-    data['date'] = pd.to_datetime(data['date'], format='%d/%m/%Y')
-    filtered_df = data.loc[(data['date'] <= pd.to_datetime(current_date)) & (data['date'] >= pd.to_datetime(previous_date))]
+    data = pd.DataFrame({'Headline': tag, 'URL': href,"Date":date,"Time":time})
+    data['Date'] = pd.to_datetime(data['Date'], format='%d/%m/%Y')
+    filtered_df = data.loc[(data['Date'] <= pd.to_datetime(current_date)) & (data['Date'] >= pd.to_datetime(previous_date))]
     dip=[]
     for u in list(filtered_df["URL"]):
         res = requests.get(u)
