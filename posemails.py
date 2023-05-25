@@ -36,7 +36,11 @@ def pos_email(sorted_df,concat_df):
     msg["Subject"] = f"✨ Daily Positive News Digest- {current_date} ({positive_news_count} uplifting articles out of {len(concat_df)})✨"
 
     msg["From"] = sender_email
-    msg["To"] = ", ".join(receiver_email)
+    msg["To"] = sender_email  # Set sender's email as the recipient for Bcc
+
+    # Add the recipients' email addresses to the Bcc field
+    msg["Bcc"] = ", ".join(receiver_email)
+
 
     # HTML Template for the email content
     html_template = """
