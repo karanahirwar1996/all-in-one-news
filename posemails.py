@@ -33,54 +33,52 @@ def pos_email(sorted_df,concat_df):
     table_html = sorted_df.to_html(index=False)
     msg = MIMEMultipart()
     positive_news_count = len(sorted_df)
-    msg["Subject"] = f"✨ Daily Positive News Digest- {current_date} ({positive_news_count} uplifting articles out of {len(concat_df)})✨"
+    for recipient in receiver_email:
+        msg = MIMEMultipart()
+        msg["Subject"] = f"✨ Daily Positive News Digest- {current_date} ({positive_news_count} uplifting articles out of {len(concat_df)})✨"
+        msg["From"] = sender_email
+        msg["To"] = recipient
 
-    msg["From"] = sender_email
-    msg["To"] = sender_email  # Set sender's email as the recipient for Bcc
+        # HTML Template for the email content
+        html_template = """
+        <html>
+        <head>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                }}
+                h1 {{
+                    color: #336699;
+                }}
+                table {{
+                    border-collapse: collapse;
+                    width: 100%;
+                }}
+                th, td {{
+                    padding: 8px;
+                    text-align: left;
+                    border-bottom: 1px solid #ddd;
+                }}
+                th {{
+                    background-color: #f2f2f2;
+                }}
+            </style>
+        </head>
+        <body>
+            <h1>Positive News - {current_date}</h1>
+            {table}
+        </body>
+        </html>
+        """
 
-    # Add the recipients' email addresses to the Bcc field
-    msg["Bcc"] = ", ".join(receiver_email)
+        # Set the message content with HTML template and table
+        email_content = html_template.format(current_date=current_date, table=table_html)
+        message = MIMEText(email_content, 'html')
+        msg.attach(message)
 
+        # Send the email
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender_email, password)
+            server.sendmail(sender_email, recipient, msg.as_string())
 
-    # HTML Template for the email content
-    html_template = """
-    <html>
-    <head>
-        <style>
-            body {{
-                font-family: Arial, sans-serif;
-            }}
-            h1 {{
-                color: #336699;
-            }}
-            table {{
-                border-collapse: collapse;
-                width: 100%;
-            }}
-            th, td {{
-                padding: 8px;
-                text-align: left;
-                border-bottom: 1px solid #ddd;
-            }}
-            th {{
-                background-color: #f2f2f2;
-            }}
-        </style>
-    </head>
-    <body>
-        <h1>Positive News - {current_date}</h1>
-        {table}
-    </body>
-    </html>
-    """
-
-    # Set the message content with HTML template and table
-    email_content = html_template.format(current_date=current_date, table=table_html)
-    message = MIMEText(email_content, 'html')
-    msg.attach(message)
-
-    # Send the email
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(sender_email, password)
-        server.sendmail(sender_email, receiver_email, msg.as_string())
-    return "Mail Sent SuceessFully....."
+    return "Mail Sent Successfully....."
