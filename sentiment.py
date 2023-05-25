@@ -4,7 +4,6 @@ from nltk.stem import WordNetLemmatizer
 import pandas as pd
 nltk.download('punkt')
 nltk.download('wordnet')
-import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from nltk.sentiment import SentimentIntensityAnalyzer
 json={
@@ -41,23 +40,57 @@ def calculate_positivity_score(positive_count, negative_count):
     return round(positivity_score, 2)
 
 def predict_stock_sentiment(sentence):
-    words = word_tokenize(sentence.lower())
+    import re
     
-    positive_keywords =list(pos_df['words'])
-    negative_keywords =list(neg_df['words'])
+    def remove_html_tags(text):
+        pattern = re.compile('<.*?>')
+        return pattern.sub(r'', text)
+    
+    def remove_url(text):
+        pattern = re.compile(r'https?://\S+|www\.\S+')
+        return pattern.sub(r'', text)
+    
+    import string
+    exclude = string.punctuation
+    
+    def remove_punctuation(text):
+        return text.translate(str.maketrans('', '', exclude))
+    
+    from nltk.corpus import stopwords
+    
+    def remove_stopwords(text):
+        new_text = []
+        for word in text.split():
+            if word not in stopwords.words('english'):
+                new_text.append(word)
+        return ' '.join(new_text)
+    
+    clean_word = remove_punctuation(remove_html_tags(remove_url(sentence.lower())))
+    words = remove_stopwords(clean_word)
+    
+    positive_keywords = [WordNetLemmatizer().lemmatize(remove_punctuation(remove_html_tags(word.lower())), pos='v') for word in pos_df['words']]
+    negative_keywords = [WordNetLemmatizer().lemmatize(remove_punctuation(remove_html_tags(word.lower())), pos='v') for word in neg_df['words']]
     positive_count = 0
     negative_count = 0
-    lemmatizer = WordNetLemmatizer()
-
-    for word in words:
+    
+    lemmatizer = WordNetLemmatizer()  # Create an instance of WordNetLemmatizer
+    
+    for word in words.split():
         lemma = lemmatizer.lemmatize(word, pos='v')
-        if lemma in positive_keywords:
+        cleaned_word = remove_punctuation(remove_html_tags(word.lower()))
+        if any(keyword.lower() in cleaned_word for keyword in positive_keywords):
             positive_count += 1
-
+    
+    # Handle multi-word negative phrases
     for phrase in negative_keywords:
-        if phrase in sentence:
+        if phrase.lower() in sentence.lower():
             negative_count += 1
-
+    
+    # Handle multi-word positive phrases
+    for phrase in positive_keywords:
+        if phrase.lower() in sentence.lower():
+            positive_count += 1
+    
     positivity_score = calculate_positivity_score(positive_count, negative_count)
-
+    
     return positivity_score
