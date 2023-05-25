@@ -4,6 +4,7 @@ from nltk.stem import WordNetLemmatizer
 import pandas as pd
 nltk.download('punkt')
 nltk.download('wordnet')
+nltk.download('stopwords')
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from nltk.sentiment import SentimentIntensityAnalyzer
