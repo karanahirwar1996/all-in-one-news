@@ -39,6 +39,6 @@ scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/au
 creds = ServiceAccountCredentials.from_json_keyfile_dict(json, scope)
 client = gspread.authorize(creds)
 gs = client.open('Data_Source')
-sheet=gs.worksheet('Data')
+sheet=gs.worksheet('NewsData')
 sheet.clear()
 set_with_dataframe(sheet, concat_df)
