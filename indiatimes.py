@@ -8,14 +8,22 @@ def india_times(page_count=4):
     from datetime import datetime, timedelta
     def extract_date(date_string):
         date_string = date_string.replace(" IST", "")
-        datetime_obj = datetime.strptime(date_string, "%B %d, %Y, %I:%M %p")
+        try:
+            datetime_obj = datetime.strptime(date_string, "%B %d, %Y, %I:%M %p")
+        except ValueError:
+            datetime_obj = datetime.strptime(date_string, "%b %d, %Y, %I:%M %p")
         formatted_date = datetime_obj.strftime("%d/%m/%Y")
         return formatted_date
-    def extract_time(date_string):
-        date_string = date_string.replace(" IST", "")
-        datetime_obj = datetime.strptime(date_string, "%B %d, %Y, %I:%M %p")
-        formatted_date = datetime_obj.strftime("%I:%M %p")
-        return formatted_date
+
+    def extract_time(time_string):
+        time_string = time_string.replace(" IST", "")
+        try:
+            datetime_obj = datetime.strptime(time_string, "%B %d, %Y, %I:%M %p")
+        except ValueError:
+            datetime_obj = datetime.strptime(time_string, "%b %d, %Y, %I:%M %p")
+        formatted_time = datetime_obj.strftime("%I:%M %p")
+        return formatted_time
+
     current_date = datetime.now().date()
     previous_date = current_date - timedelta(days=1)
 
