@@ -29,7 +29,7 @@ def pos_email(sorted_df,concat_df):
     email_df=pd.DataFrame(all_email)
     sender_email = "karan.ahirwar1996@gmail.com"
     receiver_email=list(email_df['mail'])
-    password = "uccrgtqdnusrpmnk"
+    password = "spre fhsq nfmy gquy"
     table_html = sorted_df.to_html(index=False)
     msg = MIMEMultipart()
     positive_news_count = len(sorted_df)
